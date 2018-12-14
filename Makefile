@@ -14,7 +14,7 @@ NAME = libft.a
 
 FLAGS = -Wall -Wextra -Werror
 
-INC = includes
+INC = include
 
 SRC_PATH = srcs
 OBJ_PATH = obj
