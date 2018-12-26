@@ -12,43 +12,36 @@
 
 #include "libft.h"
 
-static double	zero_dot(intmax_t nbr)
+int		ft_isblank(char c)
 {
-	int				digits;
-	int				diviser;
-	intmax_t		tmpnbr;
-
-	digits = 0;
-	diviser = 10;
-	tmpnbr = nbr;
-	while (tmpnbr > 0)
-	{
-		tmpnbr /= 10;
-		digits++;
-	}
-	while (digits-- > 1)
-		diviser *= 10;
-	return ((double)nbr / (double)diviser);
+	return ((c == ' ' || c == '\n' || c == '\v' ||
+			c == '\t' || c == '\r' || c == '\f'));
 }
 
-double			ft_atof(const char *str)
+double	ft_atof(const char *str)
 {
-	double		res;
-	intmax_t	after_comma;
-	int			i;
-	int			neg;
+	int		sign;
+	double	i;
+	double	value;
+	int		exponent;
 
-	neg = 0;
-	res = (double)ft_atoi(str);
-	if (res == 0 && str[0] == '-')
-		neg = 1;
-	i = 0;
-	while (str[i] && str[i] != '.')
-		i++;
-	if (str[i++] == '.')
+	i = 1;
+	sign = 0;
+	value = 0;
+	while (ft_isblank(*str))
+		str++;
+	*str == '-' ? sign = 1 : 0;
+	*str == '-' || *str == '+' ? str++ : 0;
+	while ('0' <= *str && *str <= '9')
+		value = value * 10 + (*str++ - '0');
+	if (*str == '.' && (str++))
+		while ('0' <= *str && *str <= '9')
+			value += (*str++ - '0') / (i *= 10);
+	if (*str == 'E' && (str++))
 	{
-		after_comma = ft_atoi(str + i);
-		res += (res >= 0) ? zero_dot(after_comma) : -zero_dot(after_comma);
+		exponent = ft_atoi(str);
+		if (exponent != 0)
+			value = value * ft_pow(10, exponent);
 	}
-	return (neg) ? -res : res;
+	return (sign == 1 && value > 0 ? -value : value);
 }

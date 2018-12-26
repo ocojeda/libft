@@ -12,63 +12,44 @@
 
 #include "libft.h"
 
-static int	wordsnbr(const char *s, char c)
+static int	ft_wcount(char const *s, char c)
 {
-	int		i;
-	int		j;
+	size_t	wc;
 
-	j = 0;
-	i = 0;
-	while (*s != '\0')
+	while (*s && *s == c)
+		s++;
+	wc = (*s ? 1 : 0);
+	while (*s)
 	{
-		if (j == 1 && *s == c)
-			j = 0;
-		if (j == 0 && *s != c)
-		{
-			j = 1;
-			i++;
-		}
+		if (*s == c && s[1] && s[1] != c)
+			wc++;
 		s++;
 	}
-	return (i);
-}
-
-static int	wordslen(const char *s, char c)
-{
-	int		len;
-
-	len = 0;
-	while (*s != c && *s != '\0')
-	{
-		len++;
-		s++;
-	}
-	return (len);
+	return (wc);
 }
 
 char		**ft_strsplit(char const *s, char c)
 {
-	char	**str;
-	int		words;
-	int		i;
+	size_t	wc;
+	char	*start;
+	char	**tab;
 
-	if (!c || !s)
+	wc = ft_wcount((char*)s, c);
+	if (!(tab = (char**)malloc(sizeof(char*) * (wc + 1))))
 		return (NULL);
-	i = 0;
-	words = wordsnbr((const char*)s, c);
-	str = (char **)malloc(sizeof(*str) * (wordsnbr((const char *)s, c) + 1));
-	if (!str)
-		return (NULL);
-	while (words--)
+	start = (char*)s;
+	while (*s)
 	{
-		while (*s == c && *s != '\0')
-			s++;
-		str[i] = ft_strsub((const char*)s, 0, wordslen((const char *)s, c));
-		if (str[i] == NULL)
-			return (NULL);
-		s = s + wordslen((const char *)s, c);
-		i++;
+		if (*s == c)
+		{
+			if (start != s)
+				*(tab++) = ft_strsub(start, 0, s - start);
+			start = (char*)s + 1;
+		}
+		s++;
 	}
-	str[i] = NULL;
-	return (str);
+	if (start != s)
+		*(tab++) = ft_strsub(start, 0, s - start);
+	*tab = NULL;
+	return (tab - wc);
 }
